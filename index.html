@@ -417,6 +417,72 @@
 
   .donut-text .small { margin-top: 0.5rem; color: var(--text-soft); font-size: 0.9rem; }
 
+  /* ============ HEADLINE STAT ============ */
+  .headline-stat {
+    text-align: center;
+    padding: 2.75rem 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+  }
+  .headline-stat .big {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(3rem, 7vw, 4.75rem);
+    color: var(--highlight);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+  .headline-stat .label {
+    font-size: 1.05rem;
+    color: var(--text);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+  .note {
+    margin-top: 0.85rem;
+    font-size: 0.82rem;
+    color: var(--text-soft);
+    line-height: 1.55;
+    font-style: italic;
+  }
+  .small-sample-flag {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-left: 0.5rem;
+    font-weight: 600;
+  }
+  .card-sub {
+    font-size: 0.82rem;
+    color: var(--text-soft);
+    margin-top: -0.5rem;
+    margin-bottom: 1rem;
+    font-style: italic;
+  }
+  .legend-row {
+    display: flex;
+    gap: 1.25rem;
+    justify-content: center;
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    flex-wrap: wrap;
+  }
+  .legend-row .swatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    margin-right: 0.45rem;
+    vertical-align: middle;
+  }
+
   /* ============ MOBILE ============ */
   @media (max-width: 960px) {
     .sidebar { transform: translateX(-100%); width: 280px; }
@@ -464,6 +530,7 @@
 
   <nav class="nav" id="nav">
     <a href="#overview" class="active"><span class="nav-num">·</span>Overview</a>
+    <a href="#sample"><span class="nav-num">·</span>Sample</a>
 
     <div class="nav-label">Themes</div>
     <a href="#theme-1"><span class="nav-num">01</span>Support Drop-Off</a>
@@ -516,6 +583,39 @@
       <strong>Methodology.</strong>
       n=49 loss records from 44 completed and 5 near-complete responses (99%+ progress). Duplicate response IDs reflect the same respondent reporting multiple losses, consistent with study design.
     </p>
+  </section>
+
+  <!-- SAMPLE COMPOSITION -->
+  <section class="theme" id="sample">
+    <div class="theme-header">
+      <div class="theme-num">Sample</div>
+      <h2>Who is in the data.</h2>
+      <p class="theme-q">Where respondents received care and how they identify. <span style="white-space:nowrap;">(n=49 loss records)</span></p>
+    </div>
+
+    <div class="dual">
+      <div class="card" data-chart="sampleCounty">
+        <div class="card-head">
+          <div class="card-title">Where respondents received care</div>
+        </div>
+        <div class="card-sub">n=49 loss records across two counties</div>
+        <div class="chart-wrap" style="min-height: 260px;"><canvas id="chartSampleCounty"></canvas></div>
+        <div class="legend-row" id="sampleCountyLegend"></div>
+      </div>
+
+      <div class="card" data-chart="sampleRace">
+        <div class="card-head">
+          <div class="card-title">Respondent race/ethnicity</div>
+          <div class="controls" data-sort-group="sampleRace">
+            <button class="ctrl active" data-sort="desc">High → Low</button>
+            <button class="ctrl" data-sort="asc">Low → High</button>
+          </div>
+        </div>
+        <div class="card-sub">Multi-select — percentages do not sum to 100%</div>
+        <div class="chart-wrap" style="min-height: 260px;"><canvas id="chartSampleRace"></canvas></div>
+        <p class="note">Sample over-represents Black/African American and Hispanic respondents relative to county demographics — consistent with the study's focus on disparities.</p>
+      </div>
+    </div>
   </section>
 
   <!-- THEME 1 -->
@@ -606,7 +706,12 @@
       </div>
     </div>
 
-    <div class="card" data-chart="theme3c" style="margin-top: 1.5rem;">
+    <div class="headline-stat" style="margin-top: 1.5rem;">
+      <div class="big">43%</div>
+      <div class="label">of Black/African American respondents reported their race impacted the quality of care they received.</div>
+    </div>
+
+    <div class="card" data-chart="theme3c">
       <div class="card-head">
         <div class="card-title">Did race or ethnicity impact the care you received?</div>
         <div class="controls" data-sort-group="theme3c">
@@ -614,12 +719,31 @@
           <button class="ctrl" data-sort="asc">Low → High</button>
         </div>
       </div>
+      <div class="card-sub">Among 34 respondents who answered — 15 did not respond.</div>
       <div class="chart-wrap" style="min-height: 220px;"><canvas id="chart3c"></canvas></div>
       <div class="donut-text" style="margin-top:1rem;">
-        <div class="big">24<span class="pct">%</span></div>
-        <div class="small">said yes — race or ethnicity shaped how their loss was handled. n=41 valid responses.</div>
+        <div class="big">29<span class="pct">%</span></div>
+        <div class="small">said yes — race or ethnicity shaped how their loss was handled. n=34 valid responses.</div>
       </div>
     </div>
+
+    <div class="card" data-chart="theme6b" style="margin-top: 1.5rem;">
+      <div class="card-head">
+        <div class="card-title">Race impacted care — by race/ethnicity</div>
+        <div class="controls" data-sort-group="theme6b">
+          <button class="ctrl active" data-sort="desc">High → Low</button>
+          <button class="ctrl" data-sort="asc">Low → High</button>
+        </div>
+      </div>
+      <div class="card-sub">Percentage within each group who said yes</div>
+      <div class="chart-wrap" style="min-height: 280px;"><canvas id="chart6b"></canvas></div>
+      <p class="note">Multi-select — respondents may be in more than one group. Small subgroups (n&lt;5) shown for transparency but not statistically interpretable.</p>
+    </div>
+
+    <p class="methodology">
+      <strong>Methodology.</strong>
+      Crosstabs computed at respondent level (n=49 total). A respondent is counted as "Yes" if they reported race impacted care for any of their losses. 15 respondents did not answer this question.
+    </p>
   </section>
 
   <!-- THEME 4 -->
@@ -742,11 +866,10 @@ const DATA = {
   },
 
   theme3c: {
-    n: 41,
+    n: 34,
     items: [
-      { label: "No, race did not impact care",   count: 26, pct: 63 },
-      { label: "Yes, race impacted care",        count: 10, pct: 24 },
-      { label: "Unsure or other",                count: 5,  pct: 12 }
+      { label: "No, race did not impact care", count: 24, pct: 71 },
+      { label: "Yes, race impacted care",      count: 10, pct: 29 }
     ]
   },
 
@@ -790,6 +913,30 @@ const DATA = {
       { label: "Work or family leave",                     count: 6,  pct: 12 },
       { label: "Memory-making options",                    count: 5,  pct: 10 },
       { label: "Support for partners or family",           count: 5,  pct: 10 }
+    ]
+  },
+
+  sample: {
+    n: 49,
+    county: [
+      { label: "San Bernardino County", count: 30, pct: 61 },
+      { label: "Riverside County",      count: 19, pct: 39 }
+    ],
+    race: [
+      { label: "Hispanic",                       count: 26, pct: 53 },
+      { label: "Black/African American",         count: 21, pct: 43 },
+      { label: "White",                          count: 5,  pct: 10 },
+      { label: "American Indian/Alaskan Native", count: 2,  pct: 4  },
+      { label: "Asian",                          count: 1,  pct: 2  }
+    ]
+  },
+
+  theme6: {
+    byRace: [
+      { label: "Black/African American",         pct: 43, num: 9, denom: 21, smallSample: false },
+      { label: "American Indian/Alaskan Native", pct: 50, num: 1, denom: 2,  smallSample: true  },
+      { label: "White",                          pct: 20, num: 1, denom: 5,  smallSample: false },
+      { label: "Hispanic",                       pct: 8,  num: 2, denom: 26, smallSample: false }
     ]
   }
 };
@@ -913,7 +1060,9 @@ window.__state = {
   theme3c: { sort: 'desc' },
   theme4:  { sort: 'desc' },
   theme5:  { sort: 'desc' },
-  theme5b: { sort: 'desc' }
+  theme5b: { sort: 'desc' },
+  sampleRace: { sort: 'desc' },
+  theme6b: { sort: 'desc' }
 };
 
 function sortItems(items, dir, key = 'count') {
@@ -1063,6 +1212,113 @@ function renderTheme5b() {
   renderSimpleBar('chart5b', DATA.theme5b, DATA.theme5b.n, 'theme5b', { barThickness: 20 });
 }
 
+function renderSampleCounty() {
+  const p = palette();
+  const items = DATA.sample.county;
+  const colors = [p.burgundy, p.amber];
+  const data = {
+    labels: items.map(i => i.label),
+    datasets: [{
+      data: items.map(i => i.count),
+      backgroundColor: colors,
+      borderColor: cssVar('--surface'),
+      borderWidth: 3,
+      hoverOffset: 8
+    }]
+  };
+  const opts = {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '62%',
+    animation: { duration: 700, easing: 'easeOutCubic' },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: p.burgundy,
+        titleColor: p.cream,
+        bodyColor: p.cream,
+        borderColor: p.amber,
+        borderWidth: 1,
+        padding: 12,
+        cornerRadius: 8,
+        displayColors: false,
+        titleFont: { family: '"Fraunces", serif', size: 13, weight: 500 },
+        bodyFont: { size: 12 },
+        callbacks: {
+          label: ctx => {
+            const it = items[ctx.dataIndex];
+            return `${it.count} of ${DATA.sample.n}  ·  ${it.pct}%`;
+          }
+        }
+      }
+    }
+  };
+  const ctx = document.getElementById('chartSampleCounty');
+  if (!ctx) return;
+  if (window.__charts['chartSampleCounty']) window.__charts['chartSampleCounty'].destroy();
+  window.__charts['chartSampleCounty'] = new Chart(ctx, { type: 'doughnut', data, options: opts });
+
+  const legend = document.getElementById('sampleCountyLegend');
+  if (legend) {
+    legend.innerHTML = items.map((it, i) =>
+      `<span><span class="swatch" style="background:${colors[i]}"></span>${it.label} · ${it.count} (${it.pct}%)</span>`
+    ).join('');
+  }
+}
+
+function renderSampleRace() {
+  const p = palette();
+  const items = sortItems(DATA.sample.race, window.__state.sampleRace.sort);
+  const data = {
+    labels: items.map(i => i.label),
+    datasets: [{
+      label: 'Respondents',
+      data: items.map(i => i.count),
+      backgroundColor: barColors(items, 0),
+      borderRadius: 6,
+      borderSkipped: false,
+      barThickness: 22
+    }]
+  };
+  const o = baseOpts(false);
+  o.plugins.tooltip.callbacks.label = ctx => {
+    const it = items[ctx.dataIndex];
+    return `${it.count} of ${DATA.sample.n}  ·  ${it.pct}%`;
+  };
+  upsertChart('chartSampleRace', data, o);
+}
+
+function renderTheme6b() {
+  const p = palette();
+  const items = [...DATA.theme6.byRace].sort((a, b) =>
+    window.__state.theme6b.sort === 'desc' ? b.pct - a.pct : a.pct - b.pct
+  );
+  const maxValidPct = Math.max(...items.filter(i => !i.smallSample).map(i => i.pct));
+  const maxPct = Math.max(...items.map(i => i.pct));
+  const data = {
+    labels: items.map(i => i.smallSample ? `${i.label}  ⚠` : i.label),
+    datasets: [{
+      data: items.map(i => i.pct),
+      backgroundColor: items.map(i => {
+        const base = (!i.smallSample && i.pct === maxValidPct) ? p.amber : p.dusty;
+        return i.smallSample ? base + 'aa' : base;
+      }),
+      borderRadius: 6,
+      borderSkipped: false,
+      barThickness: 24
+    }]
+  };
+  const opts = baseOpts(false);
+  opts.scales.x.ticks.callback = function(value) { return value + '%'; };
+  opts.scales.x.max = Math.max(60, maxPct + 10);
+  opts.plugins.tooltip.callbacks.label = ctx => {
+    const it = items[ctx.dataIndex];
+    const flag = it.smallSample ? '  ·  small sample (n<5)' : '';
+    return `${it.pct}%  ·  ${it.num} of ${it.denom}${flag}`;
+  };
+  upsertChart('chart6b', data, opts);
+}
+
 function upsertChart(id, data, opts) {
   const ctx = document.getElementById(id);
   if (!ctx) return;
@@ -1071,11 +1327,14 @@ function upsertChart(id, data, opts) {
 }
 
 function renderAll() {
+  renderSampleCounty();
+  renderSampleRace();
   renderTheme1();
   renderTheme2();
   renderTheme3a();
   renderTheme3b();
   renderTheme3c();
+  renderTheme6b();
   renderTheme4();
   renderTheme5();
   renderTheme5b();
