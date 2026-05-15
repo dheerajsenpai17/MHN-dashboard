@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MHN Perinatal Loss Survey · Executive Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --burgundy: #5E1339;
+    --pink: #FAE8F2;
+    --dusty: #C4869F;
+    --cream: #FBF7F0;
+    --amber: #D4A574;
+    --ink: #2A0A1A;
+
+    --bg: var(--cream);
+    --surface: #ffffff;
+    --surface-alt: var(--pink);
+    --text: var(--burgundy);
+    --text-soft: #7a4a60;
+    --accent: var(--dusty);
+    --highlight: var(--amber);
+    --border: rgba(94, 19, 57, 0.12);
+    --shadow: 0 2px 24px rgba(94, 19, 57, 0.06);
+    --shadow-lg: 0 12px 48px rgba(94, 19, 57, 0.10);
+    --serif: "Fraunces", Georgia, serif;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  [data-theme="dark"] {
+    --bg: #1F0712;
+    --surface: #2E0E1E;
+    --surface-alt: #3D1428;
+    --text: var(--cream);
+    --text-soft: #d9b4c4;
+    --accent: var(--dusty);
+    --highlight: var(--amber);
+    --border: rgba(251, 247, 240, 0.10);
+    --shadow: 0 2px 24px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.6);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-weight: 400;
+    transition: background var(--transition), color var(--transition);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--serif);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  /* ============ SIDEBAR ============ */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 260px;
+    height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 2.5rem 1.75rem;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    transition: transform var(--transition), background var(--transition);
+    overflow-y: auto;
+  }
+
+  .brand {
+    margin-bottom: 2.5rem;
+  }
+
+  .brand-mark {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+  }
+
+  .brand-sub {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text-soft);
+    font-weight: 500;
+  }
+
+  .nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    flex-grow: 1;
+  }
+
+  .nav-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text-soft);
+    font-weight: 600;
+    margin: 1rem 0 0.5rem;
+    padding-left: 0.75rem;
+  }
+
+  .nav a {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 8px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    position: relative;
+  }
+
+  .nav a:hover {
+    background: var(--surface-alt);
+    color: var(--text);
+    transform: translateX(2px);
+  }
+
+  .nav a.active {
+    background: var(--surface-alt);
+    color: var(--text);
+  }
+
+  .nav a.active::before {
+    content: "";
+    position: absolute;
+    left: -1.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 24px;
+    background: var(--highlight);
+    border-radius: 0 2px 2px 0;
+  }
+
+  .nav-num {
+    font-family: var(--serif);
+    font-size: 0.85rem;
+    color: var(--accent);
+    width: 1.2rem;
+  }
+
+  .sidebar-footer {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .icon-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.65rem 0.75rem;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: left;
+    width: 100%;
+  }
+
+  .icon-btn:hover {
+    background: var(--surface-alt);
+    color: var(--highlight);
+  }
+
+  .icon-btn svg {
+    width: 16px; height: 16px;
+    flex-shrink: 0;
+  }
+
+  /* ============ MENU TOGGLE ============ */
+  .menu-toggle {
+    display: none;
+    position: fixed;
+    top: 1rem; right: 1rem;
+    z-index: 200;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: 44px; height: 44px;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--text);
+    box-shadow: var(--shadow);
+  }
+
+  /* ============ MAIN ============ */
+  .main {
+    margin-left: 260px;
+    padding: 4rem 3.5rem;
+    max-width: 1200px;
+    transition: margin var(--transition);
+  }
+
+  /* ============ HERO ============ */
+  .hero {
+    margin-bottom: 5rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding: 0.4rem 0.85rem;
+    background: var(--surface-alt);
+    border-radius: 999px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.25rem, 5vw, 3.75rem);
+    margin-bottom: 1.25rem;
+    font-weight: 400;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-size: 1.15rem;
+    color: var(--text-soft);
+    max-width: 640px;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .stat {
+    padding: 1.5rem 1.75rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .stat:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+
+  .stat-num {
+    font-family: var(--serif);
+    font-size: 2.5rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.03em;
+  }
+
+  .stat-num .pct {
+    font-size: 1.25rem;
+    color: var(--highlight);
+    margin-left: 0.15rem;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--text-soft);
+    line-height: 1.4;
+  }
+
+  /* ============ THEME SECTIONS ============ */
+  .theme {
+    margin-bottom: 6rem;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .theme.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .theme-header {
+    margin-bottom: 2rem;
+  }
+
+  .theme-num {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 0.95rem;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  .theme h2 {
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    margin-bottom: 1rem;
+    max-width: 820px;
+  }
+
+  .theme-q {
+    font-size: 0.95rem;
+    color: var(--text-soft);
+    font-style: italic;
+    max-width: 720px;
+  }
+
+  /* ============ CALLOUT ============ */
+  .callout {
+    padding: 1.25rem 1.5rem;
+    background: var(--surface-alt);
+    border-left: 3px solid var(--highlight);
+    border-radius: 0 10px 10px 0;
+    margin: 1.5rem 0;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  .callout strong {
+    font-weight: 600;
+    color: var(--highlight);
+  }
+
+  /* ============ CARD ============ */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+  }
+
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-title {
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .controls {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .ctrl {
+    padding: 0.4rem 0.85rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-soft);
+    border-radius: 999px;
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    letter-spacing: 0.02em;
+  }
+
+  .ctrl:hover {
+    border-color: var(--highlight);
+    color: var(--highlight);
+  }
+
+  .ctrl.active {
+    background: var(--text);
+    border-color: var(--text);
+    color: var(--cream);
+  }
+
+  [data-theme="dark"] .ctrl.active {
+    background: var(--highlight);
+    border-color: var(--highlight);
+    color: var(--ink);
+  }
+
+  .chart-wrap {
+    position: relative;
+    min-height: 320px;
+  }
+
+  /* ============ DUAL CARDS ============ */
+  .dual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 880px) {
+    .dual { grid-template-columns: 1fr; }
+  }
+
+  /* ============ DONUT MINI ============ */
+  .donut-stats {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .donut-text {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .donut-text .big {
+    font-family: var(--serif);
+    font-size: 3rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .donut-text .big .pct {
+    color: var(--highlight);
+    font-size: 1.5rem;
+  }
+
+  .donut-text .small {
+    margin-top: 0.5rem;
+    color: var(--text-soft);
+    font-size: 0.9rem;
+  }
+
+  /* ============ MOBILE ============ */
+  @media (max-width: 960px) {
+    .sidebar {
+      transform: translateX(-100%);
+      width: 280px;
+    }
+    .sidebar.open {
+      transform: translateX(0);
+      box-shadow: var(--shadow-lg);
+    }
+    .menu-toggle {
+      display: flex;
+    }
+    .main {
+      margin-left: 0;
+      padding: 4rem 1.5rem 2rem;
+    }
+  }
+
+  /* ============ PRINT ============ */
+  @media print {
+    .sidebar, .menu-toggle, .controls { display: none !important; }
+    .main { margin-left: 0; padding: 1rem; max-width: 100%; }
+    .theme { opacity: 1 !important; transform: none !important; page-break-inside: avoid; }
+    .card { box-shadow: none; border: 1px solid #ccc; }
+    body { background: white; color: black; }
+  }
+
+  /* ============ MISC ============ */
+  ::selection { background: var(--highlight); color: var(--ink); }
+
+  .scrim {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 90;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition);
+  }
+  .scrim.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+</style>
+</head>
+<body>
+
+<button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+
+<div class="scrim" id="scrim"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="brand-mark">MHN</div>
+    <div class="brand-sub">Perinatal Loss · 2025</div>
+  </div>
+
+  <nav class="nav" id="nav">
+    <a href="#overview" class="active"><span class="nav-num">·</span>Overview</a>
+
+    <div class="nav-label">Themes</div>
+    <a href="#theme-1"><span class="nav-num">01</span>Support Drop-Off</a>
+    <a href="#theme-2"><span class="nav-num">02</span>Grief Unacknowledged</a>
+    <a href="#theme-3"><span class="nav-num">03</span>Inconsistent Care</a>
+    <a href="#theme-4"><span class="nav-num">04</span>Family Carries Load</a>
+    <a href="#theme-5"><span class="nav-num">05</span>Formal Supports</a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="icon-btn" id="themeToggle">
+      <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <span id="themeLabel">Dark mode</span>
+    </button>
+    <button class="icon-btn" id="printBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      <span>Export PDF</span>
+    </button>
+  </div>
+</aside>
+
+<main class="main">
+
+  <!-- HERO -->
+  <section class="hero" id="overview">
+    <span class="eyebrow">Executive Findings</span>
+    <h1>Perinatal loss care, <em>between the lines</em>.</h1>
+    <p class="hero-sub">A five-theme reading of survey responses from 49 participants who experienced perinatal loss — what they needed, what they received, and the quiet distance between the two.</p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">49</div>
+        <div class="stat-label">Participants surveyed</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">5</div>
+        <div class="stat-label">Themes identified</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">30<span class="pct">%</span></div>
+        <div class="stat-label">Needed support in weeks &amp; months after loss</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">13<span class="pct">%</span></div>
+        <div class="stat-label">Ever accessed a therapist post-loss</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THEME 1 -->
+  <section class="theme" id="theme-1">
+    <div class="theme-header">
+      <div class="theme-num">Theme 01</div>
+      <h2>Support drops off after the immediate loss.</h2>
+      <p class="theme-q">At which points did you most need support that you did <em>not</em> receive? <span style="white-space:nowrap;">(n=47, multi-select)</span></p>
+    </div>
+
+    <div class="card" data-chart="theme1">
+      <div class="card-head">
+        <div class="card-title">Unmet support, by timing</div>
+        <div class="controls" data-sort-group="theme1">
+          <button class="ctrl active" data-sort="desc">High → Low</button>
+          <button class="ctrl" data-sort="asc">Low → High</button>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="chart1"></canvas></div>
+    </div>
+
+    <div class="callout">
+      <strong>80%</strong> of participants who filed a grievance (4 of 5) received no follow-up — the loudest signal of post-loss silence.
+    </div>
+  </section>
+
+  <!-- THEME 2 -->
+  <section class="theme" id="theme-2">
+    <div class="theme-header">
+      <div class="theme-num">Theme 02</div>
+      <h2>Participants felt forgotten — grief was not acknowledged.</h2>
+      <p class="theme-q">What support did you need but <em>not</em> receive? (n=47, multi-select)</p>
+    </div>
+
+    <div class="card" data-chart="theme2">
+      <div class="card-head">
+        <div class="card-title">Met vs unmet needs</div>
+        <div class="controls">
+          <div class="controls" data-filter-group="theme2" style="margin-right:0.5rem;">
+            <button class="ctrl active" data-filter="all">All</button>
+            <button class="ctrl" data-filter="unmet">Unmet only</button>
+            <button class="ctrl" data-filter="met">Met only</button>
+          </div>
+          <div class="controls" data-sort-group="theme2">
+            <button class="ctrl active" data-sort="desc">High → Low</button>
+            <button class="ctrl" data-sort="asc">Low → High</button>
+          </div>
+        </div>
+      </div>
+      <div class="chart-wrap" style="min-height: 440px;"><canvas id="chart2"></canvas></div>
+    </div>
+  </section>
+
+  <!-- THEME 3 -->
+  <section class="theme" id="theme-3">
+    <div class="theme-header">
+      <div class="theme-num">Theme 03</div>
+      <h2>Inconsistency of care — no single standard.</h2>
+      <p class="theme-q">Compassion and communication varied widely between providers.</p>
+    </div>
+
+    <div class="dual">
+      <div class="card" data-chart="theme3a">
+        <div class="card-head">
+          <div class="card-title">Was your loss handled with compassion?</div>
+          <div class="controls" data-sort-group="theme3a">
+            <button class="ctrl active" data-sort="desc">High → Low</button>
+            <button class="ctrl" data-sort="asc">Low → High</button>
+          </div>
+        </div>
+        <div class="chart-wrap" style="min-height:200px;"><canvas id="chart3a"></canvas></div>
+        <div class="donut-text" style="margin-top:1rem;">
+          <div class="big">74<span class="pct">%</span></div>
+          <div class="small">said yes — yet 1 in 4 did not. n=35 valid responses.</div>
+        </div>
+      </div>
+
+      <div class="card" data-chart="theme3b">
+        <div class="card-head">
+          <div class="card-title">How were you communicated to?</div>
+          <div class="controls" data-sort-group="theme3b">
+            <button class="ctrl active" data-sort="desc">High → Low</button>
+            <button class="ctrl" data-sort="asc">Low → High</button>
+          </div>
+        </div>
+        <div class="chart-wrap" style="min-height:200px;"><canvas id="chart3b"></canvas></div>
+        <div class="donut-text" style="margin-top:1rem;">
+          <div class="big">46<span class="pct">%</span></div>
+          <div class="small">were told what would be done, rather than given choices. n=26 valid.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THEME 4 -->
+  <section class="theme" id="theme-4">
+    <div class="theme-header">
+      <div class="theme-num">Theme 04</div>
+      <h2>Partners and family carry the primary support load.</h2>
+      <p class="theme-q">Who supported you <em>during</em> and <em>after</em> your loss? (n=49, multi-select, paired)</p>
+    </div>
+
+    <div class="card" data-chart="theme4">
+      <div class="card-head">
+        <div class="card-title">Sources of support · during vs after</div>
+        <div class="controls" data-sort-group="theme4">
+          <button class="ctrl active" data-sort="desc">High → Low</button>
+          <button class="ctrl" data-sort="asc">Low → High</button>
+        </div>
+      </div>
+      <div class="chart-wrap" style="min-height: 400px;"><canvas id="chart4"></canvas></div>
+    </div>
+
+    <div class="callout">
+      Therapists are the <strong>only formal source that grows after loss</strong> — every other professional source declines exactly when grief peaks.
+    </div>
+  </section>
+
+  <!-- THEME 5 -->
+  <section class="theme" id="theme-5">
+    <div class="theme-header">
+      <div class="theme-num">Theme 05</div>
+      <h2>Formal supports remain limited.</h2>
+      <p class="theme-q">Reasons for not accessing services after loss (n=47, multi-select)</p>
+    </div>
+
+    <div class="card" data-chart="theme5">
+      <div class="card-head">
+        <div class="card-title">Why services went unused</div>
+        <div class="controls" data-sort-group="theme5">
+          <button class="ctrl active" data-sort="desc">High → Low</button>
+          <button class="ctrl" data-sort="asc">Low → High</button>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="chart5"></canvas></div>
+    </div>
+
+    <div class="callout">
+      Grief counseling is the <strong>#1 unmet need (19%)</strong> — yet only <strong>6 of 47 participants (13%)</strong> ever accessed a therapist after loss. The gap is the headline.
+    </div>
+  </section>
+
+  <footer style="padding: 3rem 0 1rem; border-top: 1px solid var(--border); margin-top: 4rem; color: var(--text-soft); font-size: 0.8rem; text-align: center;">
+    MHN Perinatal Loss Survey · Executive Dashboard · prepared 2026
+  </footer>
+
+</main>
+
+<script>
+/* ============================================================
+   DATA  — single source of truth, edit here to update charts
+   ============================================================ */
+const DATA = {
+  meta: {
+    n: 49,
+    themes: 5,
+    survey: "MHN Perinatal Loss Survey 2025"
+  },
+
+  theme1: {
+    n: 47,
+    items: [
+      { label: "In the weeks or months that followed", count: 14, pct: 30 },
+      { label: "N/A — I felt I received the support I needed", count: 11, pct: 23 },
+      { label: "During the experience of loss", count: 9, pct: 19 },
+      { label: "Right after the loss", count: 8, pct: 17 },
+      { label: "I needed support throughout", count: 7, pct: 15 },
+      { label: "When I learned about the loss", count: 5, pct: 11 }
+    ]
+  },
+
+  theme2: {
+    n: 47,
+    items: [
+      { label: "I received all the support I needed", count: 13, pct: 28, kind: "met" },
+      { label: "Grief counseling or therapy", count: 9, pct: 19, kind: "unmet" },
+      { label: "Help understanding medical information", count: 8, pct: 17, kind: "unmet" },
+      { label: "Practical help at home", count: 8, pct: 17, kind: "unmet" },
+      { label: "Guidance on decisions (autopsy, memory-making, burial)", count: 6, pct: 13, kind: "unmet" },
+      { label: "Emotional support", count: 5, pct: 11, kind: "unmet" },
+      { label: "Help communicating with family about loss", count: 5, pct: 11, kind: "unmet" },
+      { label: "Follow-up care or referrals", count: 5, pct: 11, kind: "unmet" },
+      { label: "Spiritual or cultural support", count: 5, pct: 11, kind: "unmet" },
+      { label: "Financial or insurance support", count: 2, pct: 4, kind: "unmet" },
+      { label: "Other (write-in)", count: 2, pct: 4, kind: "unmet" }
+    ]
+  },
+
+  theme3a: {
+    n: 35,
+    items: [
+      { label: "Yes", count: 26, pct: 74 },
+      { label: "No", count: 9, pct: 26 }
+    ]
+  },
+
+  theme3b: {
+    n: 26,
+    items: [
+      { label: "Given options and could choose", count: 14, pct: 54 },
+      { label: "Told what would be done", count: 12, pct: 46 }
+    ]
+  },
+
+  theme4: {
+    n: 49,
+    items: [
+      { label: "Partner or spouse",           during: 30, after: 28 },
+      { label: "Family member",               during: 25, after: 24 },
+      { label: "Friend",                      during: 14, after: 13 },
+      { label: "Doula",                       during: 7,  after: 5 },
+      { label: "Therapist or counselor",      during: 4,  after: 6 },
+      { label: "Nurse or medical provider",   during: 5,  after: 2 },
+      { label: "Community-based organization",during: 4,  after: 2 },
+      { label: "Grief support group",         during: 4,  after: 2 },
+      { label: "Social worker",               during: 3,  after: 1 }
+    ]
+  },
+
+  theme5: {
+    n: 47,
+    items: [
+      { label: "Not interested in seeking these services", count: 17, pct: 36 },
+      { label: "Grief made it difficult to access",         count: 15, pct: 32 },
+      { label: "Didn't know where to find services",        count: 13, pct: 28 },
+      { label: "Requested community resource connection",   count: 6,  pct: 13 },
+      { label: "Felt adequately supported by provider",     count: 3,  pct: 6 }
+    ]
+  }
+};
+
+/* ============================================================
+   THEME — light/dark with persistence
+   ============================================================ */
+const themeBtn = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+const themeLabel = document.getElementById('themeLabel');
+const SUN = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+const MOON = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  if (t === 'dark') {
+    themeIcon.innerHTML = SUN;
+    themeLabel.textContent = 'Light mode';
+  } else {
+    themeIcon.innerHTML = MOON;
+    themeLabel.textContent = 'Dark mode';
+  }
+  try { localStorage.setItem('mhn-theme', t); } catch (e) {}
+  // re-render charts to pick up new colors
+  if (window.__charts) {
+    Object.values(window.__charts).forEach(c => { try { c.update(); } catch(e){} });
+    renderAll();
+  }
+}
+themeBtn.addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme') || 'light';
+  applyTheme(cur === 'light' ? 'dark' : 'light');
+});
+(() => {
+  let saved = 'light';
+  try { saved = localStorage.getItem('mhn-theme') || 'light'; } catch(e){}
+  applyTheme(saved);
+})();
+
+/* ============================================================
+   CHART HELPERS
+   ============================================================ */
+function cssVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+function palette() {
+  return {
+    burgundy: cssVar('--burgundy'),
+    pink: cssVar('--pink'),
+    dusty: cssVar('--dusty'),
+    cream: cssVar('--cream'),
+    amber: cssVar('--highlight'),
+    text: cssVar('--text'),
+    soft: cssVar('--text-soft'),
+    border: cssVar('--border')
+  };
+}
+
+Chart.defaults.font.family = '"Inter", sans-serif';
+Chart.defaults.font.size = 12;
+Chart.defaults.font.weight = 500;
+
+function baseOpts(showLegend = false) {
+  const p = palette();
+  return {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 700, easing: 'easeOutCubic' },
+    plugins: {
+      legend: {
+        display: showLegend,
+        position: 'top',
+        align: 'end',
+        labels: {
+          color: p.text,
+          usePointStyle: true,
+          pointStyle: 'circle',
+          padding: 14,
+          font: { size: 11, weight: 500 }
+        }
+      },
+      tooltip: {
+        backgroundColor: p.burgundy,
+        titleColor: p.cream,
+        bodyColor: p.cream,
+        borderColor: p.amber,
+        borderWidth: 1,
+        padding: 12,
+        cornerRadius: 8,
+        displayColors: false,
+        titleFont: { family: '"Fraunces", serif', size: 13, weight: 500 },
+        bodyFont: { size: 12 },
+        callbacks: {}
+      }
+    },
+    scales: {
+      x: {
+        beginAtZero: true,
+        grid: { color: p.border, drawBorder: false },
+        ticks: { color: p.soft, font: { size: 11 } }
+      },
+      y: {
+        grid: { display: false, drawBorder: false },
+        ticks: { color: p.text, font: { size: 12, weight: 500 } }
+      }
+    }
+  };
+}
+
+function barColors(items, highlightIdx = 0) {
+  const p = palette();
+  return items.map((_, i) => i === highlightIdx ? p.amber : p.dusty);
+}
+
+window.__charts = {};
+window.__state = {
+  theme1: { sort: 'desc' },
+  theme2: { sort: 'desc', filter: 'all' },
+  theme3a: { sort: 'desc' },
+  theme3b: { sort: 'desc' },
+  theme4: { sort: 'desc' },
+  theme5: { sort: 'desc' }
+};
+
+function sortItems(items, dir, key = 'count') {
+  return [...items].sort((a, b) => dir === 'desc' ? b[key] - a[key] : a[key] - b[key]);
+}
+
+/* ============================================================
+   RENDERERS
+   ============================================================ */
+function renderTheme1() {
+  const p = palette();
+  const items = sortItems(DATA.theme1.items, window.__state.theme1.sort);
+  const data = {
+    labels: items.map(i => i.label),
+    datasets: [{
+      label: 'Participants',
+      data: items.map(i => i.count),
+      backgroundColor: barColors(items, 0),
+      borderRadius: 6,
+      borderSkipped: false,
+      barThickness: 22
+    }]
+  };
+  const opts = baseOpts(false);
+  opts.plugins.tooltip.callbacks.label = ctx => {
+    const it = items[ctx.dataIndex];
+    return `${it.count} of ${DATA.theme1.n}  ·  ${it.pct}%`;
+  };
+  upsertChart('chart1', data, opts);
+}
+
+function renderTheme2() {
+  const p = palette();
+  const st = window.__state.theme2;
+  let items = DATA.theme2.items;
+  if (st.filter !== 'all') items = items.filter(i => i.kind === st.filter);
+  items = sortItems(items, st.sort);
+  const data = {
+    labels: items.map(i => i.label),
+    datasets: [{
+      label: 'Participants',
+      data: items.map(i => i.count),
+      backgroundColor: items.map(i => i.kind === 'met' ? p.amber : p.dusty),
+      borderRadius: 6,
+      borderSkipped: false,
+      barThickness: 18
+    }]
+  };
+  const opts = baseOpts(false);
+  opts.plugins.tooltip.callbacks.label = ctx => {
+    const it = items[ctx.dataIndex];
+    const tag = it.kind === 'met' ? 'Met' : 'Unmet';
+    return `${tag}  ·  ${it.count} of ${DATA.theme2.n}  ·  ${it.pct}%`;
+  };
+  upsertChart('chart2', data, opts);
+}
+
+function renderTheme3a() {
+  const p = palette();
+  const items = sortItems(DATA.theme3a.items, window.__state.theme3a.sort);
+  const data = {
+    labels: items.map(i => i.label),
+    datasets: [{
+      data: items.map(i => i.count),
+      backgroundColor: items.map(i => i.label === 'Yes' ? p.dusty : p.amber),
+      borderRadius: 6,
+      borderSkipped: false,
+      barThickness: 28
+    }]
+  };
+  const opts = baseOpts(false);
+  opts.plugins.tooltip.callbacks.label = ctx => {
+    const it = items[ctx.dataIndex];
+    return `${it.count} of ${DATA.theme3a.n}  ·  ${it.pct}%`;
+  };
+  upsertChart('chart3a', data, opts);
+}
+
+function renderTheme3b() {
+  const p = palette();
+  const items = sortItems(DATA.theme3b.items, window.__state.theme3b.sort);
+  const data = {
+    labels: items.map(i => i.label),
+    datasets: [{
+      data: items.map(i => i.count),
+      backgroundColor: items.map((_, i) => i === 0 ? p.dusty : p.amber),
+      borderRadius: 6,
+      borderSkipped: false,
+      barThickness: 28
+    }]
+  };
+  const opts = baseOpts(false);
+  opts.plugins.tooltip.callbacks.label = ctx => {
+    const it = items[ctx.dataIndex];
+    return `${it.count} of ${DATA.theme3b.n}  ·  ${it.pct}%`;
+  };
+  upsertChart('chart3b', data, opts);
+}
+
+function renderTheme4() {
+  const p = palette();
+  // sort by during (or max of during/after)
+  const items = [...DATA.theme4.items].sort((a, b) => {
+    const av = Math.max(a.during, a.after);
+    const bv = Math.max(b.during, b.after);
+    return window.__state.theme4.sort === 'desc' ? bv - av : av - bv;
+  });
+  const data = {
+    labels: items.map(i => i.label),
+    datasets: [
+      {
+        label: 'During loss',
+        data: items.map(i => i.during),
+        backgroundColor: p.burgundy,
+        borderRadius: 5,
+        borderSkipped: false,
+        barThickness: 12
+      },
+      {
+        label: 'After loss',
+        data: items.map(i => i.after),
+        backgroundColor: p.amber,
+        borderRadius: 5,
+        borderSkipped: false,
+        barThickness: 12
+      }
+    ]
+  };
+  const opts = baseOpts(true);
+  opts.plugins.tooltip.callbacks.label = ctx => {
+    const it = items[ctx.dataIndex];
+    const tag = ctx.datasetIndex === 0 ? 'During' : 'After';
+    const val = ctx.datasetIndex === 0 ? it.during : it.after;
+    return `${tag}  ·  ${val} of ${DATA.theme4.n}`;
+  };
+  upsertChart('chart4', data, opts);
+}
+
+function renderTheme5() {
+  const p = palette();
+  const items = sortItems(DATA.theme5.items, window.__state.theme5.sort);
+  const data = {
+    labels: items.map(i => i.label),
+    datasets: [{
+      data: items.map(i => i.count),
+      backgroundColor: barColors(items, 0),
+      borderRadius: 6,
+      borderSkipped: false,
+      barThickness: 22
+    }]
+  };
+  const opts = baseOpts(false);
+  opts.plugins.tooltip.callbacks.label = ctx => {
+    const it = items[ctx.dataIndex];
+    return `${it.count} of ${DATA.theme5.n}  ·  ${it.pct}%`;
+  };
+  upsertChart('chart5', data, opts);
+}
+
+function upsertChart(id, data, opts) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  if (window.__charts[id]) {
+    window.__charts[id].destroy();
+  }
+  window.__charts[id] = new Chart(ctx, { type: 'bar', data, options: opts });
+}
+
+function renderAll() {
+  renderTheme1();
+  renderTheme2();
+  renderTheme3a();
+  renderTheme3b();
+  renderTheme4();
+  renderTheme5();
+}
+
+/* ============================================================
+   CONTROL BINDINGS
+   ============================================================ */
+function bindControls() {
+  document.querySelectorAll('[data-sort-group]').forEach(group => {
+    const key = group.dataset.sortGroup;
+    group.querySelectorAll('[data-sort]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        group.querySelectorAll('[data-sort]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        window.__state[key].sort = btn.dataset.sort;
+        renderAll();
+      });
+    });
+  });
+
+  document.querySelectorAll('[data-filter-group]').forEach(group => {
+    const key = group.dataset.filterGroup;
+    group.querySelectorAll('[data-filter]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        group.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        window.__state[key].filter = btn.dataset.filter;
+        renderAll();
+      });
+    });
+  });
+}
+
+/* ============================================================
+   PRINT
+   ============================================================ */
+document.getElementById('printBtn').addEventListener('click', () => {
+  window.print();
+});
+
+/* ============================================================
+   MOBILE MENU
+   ============================================================ */
+const sidebar = document.getElementById('sidebar');
+const scrim = document.getElementById('scrim');
+document.getElementById('menuToggle').addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  scrim.classList.toggle('show');
+});
+scrim.addEventListener('click', () => {
+  sidebar.classList.remove('open');
+  scrim.classList.remove('show');
+});
+
+/* ============================================================
+   NAV — active link + smooth scroll close
+   ============================================================ */
+const navLinks = document.querySelectorAll('#nav a');
+navLinks.forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 960) {
+      sidebar.classList.remove('open');
+      scrim.classList.remove('show');
+    }
+  });
+});
+
+const sections = document.querySelectorAll('section[id]');
+const linkFor = id => document.querySelector(`#nav a[href="#${id}"]`);
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => a.classList.remove('active'));
+      const link = linkFor(e.target.id);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+sections.forEach(s => navObserver.observe(s));
+
+/* ============================================================
+   SCROLL ANIMATIONS — Intersection Observer
+   ============================================================ */
+const themeObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('in-view');
+      themeObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+document.querySelectorAll('.theme').forEach(el => themeObserver.observe(el));
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+window.addEventListener('load', () => {
+  renderAll();
+  bindControls();
+});
+</script>
+</body>
+</html>
