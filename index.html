@@ -485,6 +485,47 @@
     margin-bottom: 1rem;
     font-style: italic;
   }
+  .multi-eth-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .multi-eth-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--surface-alt);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.92rem;
+    color: var(--text);
+  }
+  .multi-eth-list .me-label { font-weight: 400; }
+  .multi-eth-list .me-count {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.15rem;
+    color: var(--text);
+    min-width: 1.5rem;
+    text-align: right;
+  }
+  .race-impact-note {
+    margin-top: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 12px 12px 0;
+    font-size: 0.95rem;
+    color: var(--text);
+    line-height: 1.55;
+  }
+  .race-impact-note strong { font-weight: 600; color: var(--accent); }
   .legend-row {
     display: flex;
     gap: 1.25rem;
@@ -635,6 +676,20 @@
         <p class="note">Sample over-represents Black/African American and Hispanic respondents relative to county demographics — consistent with the study's focus on disparities.</p>
       </div>
     </div>
+
+    <div class="card" style="margin-top: 1.5rem;">
+      <div class="card-head">
+        <div class="card-title">Multi-ethnic breakdown</div>
+      </div>
+      <div class="card-sub">Composition of the 6 respondents grouped as "Multi-ethnic" above.</div>
+      <ul class="multi-eth-list">
+        <li><span class="me-label">Black/African American + Hispanic</span><span class="me-count">2</span></li>
+        <li><span class="me-label">American Indian/Alaskan Native + Hispanic</span><span class="me-count">1</span></li>
+        <li><span class="me-label">White + Black/African American + Hispanic</span><span class="me-count">1</span></li>
+        <li><span class="me-label">White + American Indian/Alaskan Native + Black/African American + Hispanic</span><span class="me-count">1</span></li>
+        <li><span class="me-label">White + Hispanic</span><span class="me-count">1</span></li>
+      </ul>
+    </div>
   </section>
 
   <!-- THEME 1 -->
@@ -764,6 +819,10 @@
       <strong>Methodology.</strong>
       Crosstabs computed at respondent level (n=49 total). A respondent is counted as "Yes" if they reported race impacted care for any of their losses. 13 respondents did not answer this question.
     </p>
+
+    <div class="race-impact-note">
+      <strong>Multi-ethnic respondents who reported race impacting their care:</strong> American Indian/Alaskan Native + Hispanic, and White + Black/African American + Hispanic. Both have 3+ ethnicities crossing racial visibility lines.
+    </div>
   </section>
 
   <!-- THEME 4 -->
